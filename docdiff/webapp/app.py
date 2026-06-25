@@ -15,7 +15,6 @@ import uvicorn
 from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from docdiff.differ import Differ
 from docdiff.embedder import Embedder
@@ -27,7 +26,6 @@ from docdiff.parser import parse_docx
 # In-memory cache for job results
 jobs: Dict[str, Any] = {}
 executor = ThreadPoolExecutor(max_workers=2)
-
 
 def _do_compare(job_id: str, old_path: Path, new_path: Path, threshold: float, device: str | None) -> None:
     """Run comparison in background thread."""
@@ -54,6 +52,11 @@ def _do_compare(job_id: str, old_path: Path, new_path: Path, threshold: float, d
             "error": str(e),
         }
 
+_TEMPLATES_DIR = Path(__file__).parent / "templates"
+
+def _read_index_html() -> str:
+    path = _TEMPLATES_DIR / "index.html"
+    return path.read_text(encoding="utf-8")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -61,16 +64,13 @@ async def lifespan(app: FastAPI):
     yield
     executor.shutdown(wait=False)
 
-
-templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
-
 app = FastAPI(title="DocDiff", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request) -> Any:
-    return templates.TemplateResponse("index.html", {"request": request})
+    return HTMLResponse(content=_read_index_html())
 
 
 @app.post("/compare")
