@@ -30,7 +30,11 @@ pip install -e .          # editable install для entry points
 Простой интерфейс в браузере — drag-and-drop, прогресс-бар, настройки:
 
 ```bash
+# Если установлено через pip
 docdiff-gui
+
+# Или напрямую из папки проекта (без установки)
+python -m docdiff.desktop.launcher
 ```
 
 Откроется окно браузера с интерфейсом. Перетащите два файла `.docx`, нажмите **Сравнить** — результат откроется в новой вкладке.
@@ -40,8 +44,10 @@ docdiff-gui
 Запустить как локальный веб-сервер (FastAPI):
 
 ```bash
+# Если установлено через pip
 docdiff-web
-# или
+
+# Или напрямую из папки проекта
 python -m docdiff.webapp.app
 ```
 
@@ -54,6 +60,9 @@ python -m docdiff.webapp.app
 ```bash
 # Markdown (по умолчанию)
 docdiff old_contract.docx new_contract.docx
+
+# Или напрямую из папки проекта
+python -m docdiff.cli old_contract.docx new_contract.docx
 
 # JSON
 docdiff old_contract.docx new_contract.docx --format json

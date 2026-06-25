@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import signal
 import sys
 import threading
 import time
@@ -9,13 +8,18 @@ import webbrowser
 
 from pathlib import Path
 
+# Add project root to sys.path for direct execution without pip install
+_project_root = Path(__file__).parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
 import uvicorn
+
+from docdiff.webapp.app import app
 
 
 def _run_server(host: str = "127.0.0.1", port: int = 8765) -> None:
     """Run the FastAPI server in the current thread."""
-    # Import here to avoid circular import at module level
-    from ..webapp.app import app
     uvicorn.run(app, host=host, port=port, log_level="warning")
 
 

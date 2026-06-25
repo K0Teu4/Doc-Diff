@@ -17,11 +17,11 @@ from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from ..differ import Differ
-from ..embedder import Embedder
-from ..html_generator import HtmlGenerator
-from ..matcher import Matcher
-from ..parser import parse_docx
+from docdiff.differ import Differ
+from docdiff.embedder import Embedder
+from docdiff.html_generator import HtmlGenerator
+from docdiff.matcher import Matcher
+from docdiff.parser import parse_docx
 
 
 # In-memory cache for job results
