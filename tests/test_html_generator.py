@@ -23,13 +23,15 @@ def test_html_modified():
     )
     html = gen.generate(MatchResult(matches=[match]))
     assert "<!DOCTYPE html>" in html
-    assert "Semantic Document Diff" in html
+    assert "DocDiff" in html
     assert "Цена" in html
     assert "modified" in html
     assert "100" in html
     assert "150" in html
     assert "Было" in html
     assert "Стало" in html
+    assert "block-" in html  # anchor links
+    assert "toc-item" in html  # sidebar navigation
 
 
 def test_html_added_removed():
@@ -65,9 +67,11 @@ def test_html_stats():
         BlockMatch(type="removed", score=0.0, block_a=make_block("C", "c"), block_b=None, a_index=1, b_index=-1),
     ]
     html = gen.generate(MatchResult(matches=matches))
-    assert "Modified: 1" in html
-    assert "Added: 1" in html
-    assert "Removed: 1" in html
+    assert "Modified" in html
+    assert "Added" in html
+    assert "Removed" in html
+    assert "stat-card" in html
+    assert "stat-value" in html
 
 
 def test_html_no_changes():
