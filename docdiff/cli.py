@@ -7,6 +7,7 @@ from pathlib import Path
 from .differ import Differ
 from .embedder import Embedder
 from .formatter import Formatter
+from .html_generator import HtmlGenerator
 from .matcher import Matcher
 from .parser import parse_docx
 
@@ -20,9 +21,15 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument("new_doc", type=str, help="Path to the new DOCX file.")
     parser.add_argument(
         "--format",
-        choices=["markdown", "json"],
+        choices=["markdown", "json", "html"],
         default="markdown",
         help="Output format (default: markdown).",
+    )
+    parser.add_argument(
+        "--output", "-o",
+        type=str,
+        default=None,
+        help="Output file path. For html, defaults to docdiff-report.html. For others, stdout.",
     )
     parser.add_argument(
         "--threshold",
@@ -61,14 +68,29 @@ def main(argv: list[str] | None = None) -> int:
     matcher = Matcher(embedder, threshold=args.threshold)
     differ = Differ()
     formatter = Formatter(differ)
+    html_generator = HtmlGenerator(differ)
 
     print("Matching semantic blocks...", file=sys.stderr)
     match_result = matcher.match(blocks_old, blocks_new)
 
+    output_text = ""
     if args.format == "json":
-        print(formatter.to_json_string(match_result))
+        output_text = formatter.to_json_string(match_result)
+    elif args.format == "html":
+        output_text = html_generator.generate(match_result)
     else:
-        print(formatter.format_markdown(match_result))
+        output_text = formatter.format_markdown(match_result)
+
+    output_path = args.output
+    if args.format == "html" and not output_path:
+        output_path = "docdiff-report.html"
+
+    if output_path:
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(output_text)
+        print(f"Report saved to: {output_path}", file=sys.stderr)
+    else:
+        print(output_text)
 
     return 0
 

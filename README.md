@@ -8,7 +8,8 @@ CLI-инструмент для семантического сравнения 
 - **Детальный diff** — внутри изменённых блоков показывает diff на уровне предложений
 - **Детекция числовых изменений** — автоматически выделяет изменения в цифрах и процентах
 - **Детекция перемещений** — находит разделы, которые переместились в документе
-- **Markdown и JSON** — два формата вывода
+- **HTML-отчёт** — красивый side-by-side diff в браузере с подсветкой изменений
+- **Markdown и JSON** — два формата вывода в терминал
 - **Полностью локально** — работает без внешних API, используется `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 
 ## Установка
@@ -31,6 +32,11 @@ docdiff old_contract.docx new_contract.docx
 
 ```bash
 docdiff old_contract.docx new_contract.docx --format json
+```
+
+```bash
+docdiff old_contract.docx new_contract.docx --format html
+docdiff old_contract.docx new_contract.docx --format html -o report.html
 ```
 
 ### Настройка порога сходства
@@ -69,18 +75,32 @@ docdiff old_contract.docx new_contract.docx --device cuda
   Стоимость товара составляет ~~100 000~~ → **150 000** рублей.
 ```
 
+## Пример вывода (HTML)
+
+HTML-отчёт открывается в браузере и содержит:
+- Сводку изменений (Modified / Added / Removed / Moved)
+- Side-by-side сравнение для изменённых блоков
+- Подсветку удалённого (зачёркивание) и добавленного (жирный зелёный) текста
+- Выделение числовых изменений цветом
+
+```bash
+docdiff old_contract.docx new_contract.docx --format html -o report.html
+# затем откройте report.html в браузере
+```
+
 ## Архитектура
 
 ```
 docdiff/
 ├── docdiff/
 │   ├── __init__.py
-│   ├── parser.py       # DOCX → структура (SemanticBlock)
-│   ├── embedder.py     # sentence-transformers (MiniLM)
-│   ├── matcher.py      # косинусное сравнение + greedy matching
-│   ├── differ.py       # детальный diff на уровне предложений
-│   ├── formatter.py    # markdown/json вывод
-│   └── cli.py          # argparse
+│   ├── parser.py          # DOCX → структура (SemanticBlock)
+│   ├── embedder.py        # sentence-transformers (MiniLM)
+│   ├── matcher.py         # косинусное сравнение + greedy matching
+│   ├── differ.py          # детальный diff на уровне предложений
+│   ├── formatter.py       # markdown/json вывод
+│   ├── html_generator.py  # HTML-отчёт
+│   └── cli.py             # argparse + точка входа
 ├── tests/
 │   ├── fixtures/
 │   │   ├── old_contract.docx
@@ -89,8 +109,10 @@ docdiff/
 │   ├── test_differ.py
 │   ├── test_matcher.py
 │   ├── test_formatter.py
+│   ├── test_html_generator.py
 │   └── test_cli.py
 ├── requirements.txt
+├── pyproject.toml
 └── README.md
 ```
 
