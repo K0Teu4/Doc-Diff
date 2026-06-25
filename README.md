@@ -167,6 +167,21 @@ pytest tests/ -v
 - `fastapi`, `uvicorn`, `jinja2`, `python-multipart` (для GUI и webapp)
 - `pytest` (для разработки)
 
+## Сборка .exe (Windows)
+
+Если хотите получить standalone-файл для Windows (не требует Python на компьютере):
+
+```bash
+pip install pyinstaller
+python build.py
+```
+
+Результат:
+- `dist/docdiff/docdiff.exe` — GUI (двойной клик → открывает браузер)
+- `dist/docdiff-cli/docdiff-cli.exe` — CLI (с консолью)
+
+При первом запуске `docdiff.exe` скачает модель `sentence-transformers` (~120 MB) в локальный кэш.
+
 ## Критерии готовности
 
 - [x] pytest проходит на тестовых фикстурах (28 тестов)
