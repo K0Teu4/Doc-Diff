@@ -65,7 +65,9 @@ async def lifespan(app: FastAPI):
     executor.shutdown(wait=False)
 
 app = FastAPI(title="DocDiff", lifespan=lifespan)
-app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
+_static_dir = Path(__file__).parent / "static"
+if _static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
