@@ -1,2 +1,4 @@
 [console_scripts]
 docdiff = docdiff.cli:main
+docdiff-gui = docdiff.desktop.launcher:main
+docdiff-web = docdiff.webapp.app:run_server

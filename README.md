@@ -1,6 +1,8 @@
 # Semantic Document Diff (docdiff)
 
-CLI-инструмент для семантического сравнения документов Microsoft Word (.docx). Вместо построчного сравнения, `docdiff` работает на уровне абзацев и предложений, используя векторные эмбеддинги для нахождения соответствий между разделами.
+Инструмент для семантического сравнения документов Microsoft Word (.docx). Вместо построчного сравнения, `docdiff` работает на уровне абзацев и предложений, используя векторные эмбеддинги для нахождения соответствий между разделами.
+
+**Доступно как:** CLI, веб-приложение, и графическое приложение (desktop).
 
 ## Возможности
 
@@ -18,44 +20,51 @@ CLI-инструмент для семантического сравнения 
 git clone <repo>
 cd docdiff
 pip install -r requirements.txt
+pip install -e .          # editable install для entry points
 ```
 
 ## Использование
 
-### Markdown (по умолчанию)
+### 🖥️ Графическое приложение (рекомендуется)
+
+Простой интерфейс в браузере — drag-and-drop, прогресс-бар, настройки:
 
 ```bash
+docdiff-gui
+```
+
+Откроется окно браузера с интерфейсом. Перетащите два файла `.docx`, нажмите **Сравнить** — результат откроется в новой вкладке.
+
+### 🌐 Веб-сервер
+
+Запустить как локальный веб-сервер (FastAPI):
+
+```bash
+docdiff-web
+# или
+python -m docdiff.webapp.app
+```
+
+Откройте `http://localhost:8765` в браузере.
+
+### 📟 CLI
+
+Для автоматизации и скриптов:
+
+```bash
+# Markdown (по умолчанию)
 docdiff old_contract.docx new_contract.docx
-```
 
-### JSON
-
-```bash
+# JSON
 docdiff old_contract.docx new_contract.docx --format json
-```
 
-```bash
-docdiff old_contract.docx new_contract.docx --format html
+# HTML-отчёт
 docdiff old_contract.docx new_contract.docx --format html -o report.html
-```
 
-HTML-отчёт включает:
-- **Оглавление** с якорными ссылками на каждое изменение
-- **Фильтры** по типу (Modified / Added / Removed / Moved)
-- **Тёмная/светлая тема** — переключатель в шапке
-- **Сворачиваемые блоки** — клик по заголовку сворачивает/разворачивает детали
-- **Scroll spy** — текущий раздел подсвечивается в оглавлении
-- **Адаптивный дизайн** — работает на мобильных
-
-### Настройка порога сходства
-
-```bash
+# Настройка порога
 docdiff old_contract.docx new_contract.docx --threshold 0.8
-```
 
-### Указание устройства (CPU/CUDA)
-
-```bash
+# Указание устройства (CPU/CUDA)
 docdiff old_contract.docx new_contract.docx --device cuda
 ```
 
@@ -108,19 +117,31 @@ docdiff/
 │   ├── differ.py          # детальный diff на уровне предложений
 │   ├── formatter.py       # markdown/json вывод
 │   ├── html_generator.py  # HTML-отчёт
-│   └── cli.py             # argparse + точка входа
+│   ├── cli.py             # argparse + точка входа
+│   ├── webapp/
+│   │   ├── app.py         # FastAPI + drag-and-drop UI
+│   │   ├── static/
+│   │   └── templates/
+│   │       └── index.html
+│   └── desktop/
+│       └── launcher.py    # Запускает веб-сервер + браузер
 ├── tests/
 │   ├── fixtures/
 │   │   ├── old_contract.docx
-│   │   └── new_contract.docx
+│   │   ├── new_contract.docx
+│   │   ├── thesis_v1.docx
+│   │   ├── thesis_v2.docx
+│   │   └── with_table.docx
 │   ├── test_parser.py
 │   ├── test_differ.py
 │   ├── test_matcher.py
 │   ├── test_formatter.py
 │   ├── test_html_generator.py
-│   └── test_cli.py
+│   ├── test_cli.py
+│   └── test_webapp.py
 ├── requirements.txt
 ├── pyproject.toml
+├── ROADMAP.md
 └── README.md
 ```
 
@@ -133,15 +154,13 @@ pytest tests/ -v
 ## Зависимости
 
 - Python 3.10+
-- `python-docx`
-- `sentence-transformers`
-- `scikit-learn`
-- `numpy`
-- `torch`
+- `python-docx`, `sentence-transformers`, `scikit-learn`, `numpy`, `torch`
+- `fastapi`, `uvicorn`, `jinja2`, `python-multipart` (для GUI и webapp)
 - `pytest` (для разработки)
 
 ## Критерии готовности
 
-- [x] pytest проходит на тестовых фикстурах
-- [x] Работает на реальном договоре (50+ страниц) — зависит от производительности CPU
-- [x] README с примером использования
+- [x] pytest проходит на тестовых фикстурах (28 тестов)
+- [x] CLI, веб-приложение и GUI работают
+- [x] HTML-отчёт с интерактивным UI (тёмная тема, фильтры, TOC)
+- [x] README с примерами использования

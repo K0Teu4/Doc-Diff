@@ -5,6 +5,7 @@ docdiff/cli.py
 docdiff/differ.py
 docdiff/embedder.py
 docdiff/formatter.py
+docdiff/html_generator.py
 docdiff/matcher.py
 docdiff/parser.py
 docdiff.egg-info/PKG-INFO
@@ -13,8 +14,13 @@ docdiff.egg-info/dependency_links.txt
 docdiff.egg-info/entry_points.txt
 docdiff.egg-info/requires.txt
 docdiff.egg-info/top_level.txt
+docdiff/desktop/__init__.py
+docdiff/desktop/launcher.py
+docdiff/webapp/__init__.py
+docdiff/webapp/app.py
 tests/test_cli.py
 tests/test_differ.py
 tests/test_formatter.py
+tests/test_html_generator.py
 tests/test_matcher.py
 tests/test_parser.py
