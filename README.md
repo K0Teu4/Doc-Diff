@@ -2,7 +2,7 @@
 
 Инструмент для семантического сравнения документов Microsoft Word (.docx). Вместо построчного сравнения, `docdiff` работает на уровне абзацев и предложений, используя векторные эмбеддинги для нахождения соответствий между разделами.
 
-**Доступно как:** CLI, веб-приложение, и графическое приложение (desktop).
+**Доступно как:** CLI, веб-приложение, графическое приложение (desktop), и standalone `.exe` для Windows.
 
 ## Возможности
 
@@ -10,11 +10,13 @@
 - **Детальный diff** — внутри изменённых блоков показывает diff на уровне предложений
 - **Детекция числовых изменений** — автоматически выделяет изменения в цифрах и процентах
 - **Детекция перемещений** — находит разделы, которые переместились в документе
-- **HTML-отчёт** — красивый side-by-side diff в браузере с подсветкой изменений
+- **HTML-отчёт** — красивый side-by-side diff в браузере с подсветкой изменений, тёмной темой, фильтрами, оглавлением
 - **Markdown и JSON** — два формата вывода в терминал
 - **Полностью локально** — работает без внешних API, используется `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 
 ## Установка
+
+### Из исходников (для разработки)
 
 ```bash
 git clone <repo>
@@ -22,6 +24,21 @@ cd docdiff
 pip install -r requirements.txt
 pip install -e .          # editable install для entry points
 ```
+
+### Как standalone .exe (Windows)
+
+Скачайте готовый `docdiff.exe` из [Releases](https://github.com/USERNAME/docdiff/releases) (после публикации) или соберите самостоятельно:
+
+```bash
+pip install pyinstaller
+python build.py
+```
+
+Результат:
+- `dist/docdiff/docdiff.exe` — GUI (двойной клик → открывает браузер)
+- `dist/docdiff-cli/docdiff-cli.exe` — CLI (с консолью)
+
+При первом запуске `docdiff.exe` скачает модель `sentence-transformers` (~120 MB) в локальный кэш.
 
 ## Использование
 
@@ -35,6 +52,8 @@ docdiff-gui
 
 # Или напрямую из папки проекта (без установки)
 python -m docdiff.desktop.launcher
+
+# Или двойной клик по docdiff.exe (Windows)
 ```
 
 Откроется окно браузера с интерфейсом. Перетащите два файла `.docx`, нажмите **Сравнить** — результат откроется в новой вкладке.
@@ -150,7 +169,10 @@ docdiff/
 │   └── test_webapp.py
 ├── requirements.txt
 ├── pyproject.toml
+├── build.py               # PyInstaller build script
 ├── ROADMAP.md
+├── CHANGELOG.md
+├── LICENSE
 └── README.md
 ```
 
@@ -160,6 +182,13 @@ docdiff/
 pytest tests/ -v
 ```
 
+Все 28 тестов покрывают:
+- Парсинг DOCX (стили, псевдозаголовки, таблицы)
+- Разбиение на предложения и детекцию числовых изменений
+- Семантическое сопоставление блоков (modified, moved, added, removed)
+- Генерацию HTML и Markdown отчётов
+- CLI-интерфейс и веб-эндпоинты
+
 ## Зависимости
 
 - Python 3.10+
@@ -167,24 +196,20 @@ pytest tests/ -v
 - `fastapi`, `uvicorn`, `jinja2`, `python-multipart` (для GUI и webapp)
 - `pytest` (для разработки)
 
-## Сборка .exe (Windows)
-
-Если хотите получить standalone-файл для Windows (не требует Python на компьютере):
-
-```bash
-pip install pyinstaller
-python build.py
-```
-
-Результат:
-- `dist/docdiff/docdiff.exe` — GUI (двойной клик → открывает браузер)
-- `dist/docdiff-cli/docdiff-cli.exe` — CLI (с консолью)
-
-При первом запуске `docdiff.exe` скачает модель `sentence-transformers` (~120 MB) в локальный кэш.
-
-## Критерии готовности
+## Критерии готовности v1.0
 
 - [x] pytest проходит на тестовых фикстурах (28 тестов)
+- [x] Работает на реальных документах (договоры, курсовые, таблицы)
 - [x] CLI, веб-приложение и GUI работают
 - [x] HTML-отчёт с интерактивным UI (тёмная тема, фильтры, TOC)
+- [x] Standalone `.exe` для Windows (PyInstaller)
 - [x] README с примерами использования
+- [x] LICENSE (MIT) и CHANGELOG.md
+
+## Лицензия
+
+[MIT](LICENSE) — свободное использование, модификация и распространение.
+
+---
+
+*Создано для студентов, юристов, редакторов и аналитиков, которым нужно быстро найти изменения в текстах.*
